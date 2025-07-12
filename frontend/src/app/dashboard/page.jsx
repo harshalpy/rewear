@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import EditProfileModal from "@/components/editprofile";
+import Link from "next/link";
 
 export default function UserDashboard() {
     const [user, setUser] = useState(null);
@@ -72,6 +73,13 @@ export default function UserDashboard() {
 
                 <Button variant="outline" onClick={() => setShowEdit(true)}>Edit Profile</Button>
                 <EditProfileModal user={user} open={showEdit} onClose={() => setShowEdit(false)} onUpdate={setUser} />
+                <Button variant="destructive" onClick={() => window.location.href = "/listing"}>Listing</Button>
+                <Button variant="destructive" onClick={() => {
+                    localStorage.removeItem("userId");
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
+                }}>Logout</Button>
+                {user?.is_admin && <Button  variant="destructive" href="/panel" className="text-sm">Admin Panel</Button>}
             </div>
 
             <section className="mb-12">
@@ -83,7 +91,7 @@ export default function UserDashboard() {
                         {myListings.map((product) => (
                             <Card
                                 key={product._id}
-                                className="min-w-[12rem] w-48 flex-shrink-0 rounded-xl bg-white dark:bg-muted shadow"
+                                className="min-w-[15rem] w-48 flex-shrink-0 rounded-xl bg-white dark:bg-muted shadow"
                             >
                                 <div className="relative aspect-square w-full">
                                     <Image
@@ -93,10 +101,53 @@ export default function UserDashboard() {
                                         className="object-cover"
                                     />
                                 </div>
-                                <CardContent className="p-4 space-y-1">
+                                <CardContent className="p-4 space-y-2">
                                     <h4 className="font-medium truncate">{product.title}</h4>
-                                    <p className="text-sm text-muted-foreground">{product.category}</p>
-                                    <p className="text-xs text-muted-foreground capitalize">{product.status}</p>
+
+                                    <div className="flex flex-wrap gap-2">
+                                        {product.category && (
+                                            <span className="px-2 py-0.5 text-xs rounded-full bg-[#EEE2DE] text-[#5C3D2E] capitalize">
+                                                {product.category}
+                                            </span>
+                                        )}
+                                        {product.size && (
+                                            <span className="px-2 py-0.5 text-xs rounded-full bg-[#E6F4F1] text-[#1B4D3E] uppercase">
+                                                {product.size}
+                                            </span>
+                                        )}
+                                        {product.condition && (
+                                            <span className="px-2 py-0.5 text-xs rounded-full bg-[#FFF3CD] text-[#7C5700] capitalize">
+                                                {product.condition}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex gap-2 items-center">
+                                        <span
+                                            className={`px-2 py-0.5 text-xs rounded-full capitalize ${product.status === "available"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : product.status === "inreview"
+                                                        ? "bg-yellow-100 text-yellow-800"
+                                                        : "bg-gray-200 text-gray-700"
+                                                }`}
+                                        >
+                                            {product.status}
+                                        </span>
+                                        <span
+                                            className={`px-2 py-0.5 text-xs rounded-full ${product.approved
+                                                    ? "bg-blue-100 text-blue-700"
+                                                    : "bg-red-100 text-red-700"
+                                                }`}
+                                        >
+                                            {product.approved ? "Approved" : "Pending"}
+                                        </span>
+                                    </div>
+
+                                    <Link href={`/product/${product._id}`} passHref>
+                                        <Button variant="outline" className="mt-2 w-full">
+                                            View Product
+                                        </Button>
+                                    </Link>
                                 </CardContent>
                             </Card>
                         ))}
@@ -104,16 +155,15 @@ export default function UserDashboard() {
                 )}
             </section>
 
-
             <section className="mb-12">
                 <h3 className="text-2xl font-semibold mb-4">My Purchases</h3>
                 {myListings.length === 0 ? (
                     <p className="text-muted-foreground">No purchases yet.</p>
                 ) : (
                     <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-muted rounded-xl">
-                        {myPurchases.map((product) => (
+                        {myPurchases.map((swap) => (
                             <Card
-                                key={product._id}
+                                key={swap._id}
                                 className="min-w-[12rem] w-48 flex-shrink-0 rounded-xl bg-white dark:bg-muted shadow"
                             >
                                 <div className="relative aspect-square w-full">

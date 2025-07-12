@@ -9,10 +9,10 @@ const UsersRouter = express.Router();
 UsersRouter.use(authMiddleware);
 
 UsersRouter.get('/', getAllUsers);
+UsersRouter.patch('/:id/profile-image', upload.single('image'), uploadProfileImage);
 UsersRouter.get('/:id', getUserById);
 UsersRouter.patch('/:id', updateUser);
 UsersRouter.get('/:id/points', getUserPoints);
-UsersRouter.post('/:id/profile-image', authMiddleware, upload.single('image'), uploadProfileImage);
 
 
 export default UsersRouter;

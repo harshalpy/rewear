@@ -6,27 +6,37 @@ const isOwnerOrAdmin = (user, product) => {
 
 export const createProduct = async (req, res) => {
     try {
-        const data = {
-            ...req.body,
+        const imageUrls = req.files.map(file => file.path);
+
+        const product = await Product.create({
+            title: req.body.title,
+            description: req.body.description,
+            category: req.body.category,
+            size: req.body.size,
+            condition: req.body.condition,
             user_id: req.user._id,
             status: 'inreview',
             approved: false,
-            images: req.body.images || [],
-        };
+            images: imageUrls,
+        });
 
-        const product = await Product.create(data);
         res.status(201).json({ product });
-    } catch (err) {
+    }
+    catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
+
 export const getAllProducts = async (req, res) => {
     try {
-        const { category , status , user, size, condition, tags,search,} = req.query;
+        const { category, status, user, size, condition, tags, search, } = req.query;
 
-        const filter = {};
+        const filter = {
+            approved: true,
+            status: 'available',
+        };
 
         if (category) {
             const cats = category.split(',');

@@ -6,7 +6,8 @@ export const getUserById = async (req, res) => {
         const user = await User.findById(req.params.id).select('-password_hash');
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.json({ user });
-    } catch (err) {
+    }
+    catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
@@ -19,9 +20,6 @@ export const updateUser = async (req, res) => {
         }
 
         const updates = req.body;
-        delete updates.points;
-        delete updates.is_admin;
-        delete updates.password_hash;
 
         const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true }).select('-password_hash');
         if (!user) return res.status(404).json({ message: 'User not found' });
@@ -82,7 +80,7 @@ export const uploadProfileImage = async (req, res) => {
 
         res.json({ user, message: 'Profile image updated' });
     } catch (err) {
-        console.error(err);
+        console.error("Error in uploadProfileImage:", err);
         res.status(500).json({ message: 'Server error' });
     }
 };

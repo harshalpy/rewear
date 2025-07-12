@@ -1,4 +1,6 @@
 import Swap from '../models/swap.js';
+import Product from '../models/Product.js';
+import PointHistory from '../models/Pointhistory.js';
 
 const isParticipant = (user, swap) => {
     return swap.requester_id.toString() === user._id.toString() || swap.owner_id.toString() === user._id.toString();
@@ -7,11 +9,15 @@ const isParticipant = (user, swap) => {
 export const createSwap = async (req, res) => {
     try {
         const { item_requested, offered_item, is_point_swap, points_used } = req.body;
+        const POINTS_REQUIRED = 100;
 
-        if (!item_requested) return res.status(400).json({ message: 'item_requested is required' });
+        if (!item_requested) {
+            return res.status(400).json({ message: 'item_requested is required' });
+        }
 
         const requestedProduct = await Product.findById(item_requested);
-        if (!requestedProduct || requestedProduct.status !== 'available') {
+        console.log(requestedProduct);
+        if (!requestedProduct || requestedProduct.status != 'available') {
             return res.status(400).json({ message: 'Requested item not available' });
         }
 
@@ -21,39 +27,62 @@ export const createSwap = async (req, res) => {
 
         let offeredProduct = null;
         if (!is_point_swap) {
-            if (!offered_item) return res.status(400).json({ message: 'offered_item required for direct swap' });
+            if (!offered_item) {
+                return res.status(400).json({ message: 'offered_item required for direct swap' });
+            }
+
             offeredProduct = await Product.findById(offered_item);
             if (!offeredProduct || offeredProduct.status !== 'available') {
                 return res.status(400).json({ message: 'Offered item not available' });
             }
+
+            if (offeredProduct.user_id.toString() !== req.user._id.toString()) {
+                return res.status(400).json({ message: 'You do not own the offered item' });
+            }
         }
 
-        if (is_point_swap && req.user.points < points_used) {
+        const ptsToUse = is_point_swap ? points_used || POINTS_REQUIRED : 0;
+
+        if (is_point_swap && req.user.points < ptsToUse) {
             return res.status(400).json({ message: 'Insufficient points' });
         }
 
         const swap = await Swap.create({
             item_requested,
+            status: 'completed',
             offered_item: offered_item || null,
             requester_id: req.user._id,
             owner_id: requestedProduct.user_id,
             is_point_swap: !!is_point_swap,
-            points_used: is_point_swap ? points_used : 0,
+            points_used: ptsToUse,
         });
 
         if (is_point_swap) {
-            req.user.points -= points_used;
+            req.user.points -= ptsToUse;
             await req.user.save();
-            await PointHistory.create({ user_id: req.user._id, change: -points_used, reason: `Requested item ${item_requested}` });
+
+            await PointHistory.create({
+                user_id: req.user._id,
+                change: -ptsToUse,
+                reason: `Swap request for item ${item_requested}`,
+            });
+        }
+
+        requestedProduct.status = 'swapped';
+        await requestedProduct.save();
+
+        if (offeredProduct) {
+            offeredProduct.status = 'swapped';
+            await offeredProduct.save();
         }
 
         res.status(201).json({ swap });
-    }
-    catch (err) {
-        console.error(err);
+    } catch (err) {
+        console.error('Error in createSwap:', err);
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 
 export const getUserSwaps = async (req, res) => {
     try {
@@ -132,6 +161,7 @@ export const completeSwap = async (req, res) => {
         if (swap.status !== 'accepted') return res.status(400).json({ message: 'Swap must be accepted first' });
 
         const requestedProduct = await Product.findById(swap.item_requested);
+
         requestedProduct.status = 'swapped';
         await requestedProduct.save();
 

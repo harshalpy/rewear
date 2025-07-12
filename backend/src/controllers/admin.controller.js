@@ -4,9 +4,9 @@ import AdminLog from "../models/AdminLog.js";
 export const listPendingItems = async (req, res) => {
     try {
         const items = await Product.find({ approved: false });
-        res.json({ items });
-    } catch (err) {
-        console.error(err);
+        res.json({ products: items });
+    }
+    catch (err) {
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -25,7 +25,6 @@ export const approveItem = async (req, res) => {
         res.json({ product });
     }
     catch (err) {
-        console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -45,7 +44,6 @@ export const rejectItem = async (req, res) => {
         res.json({ product });
     }
     catch (err) {
-        console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -61,7 +59,6 @@ export const removeProduct = async (req, res) => {
         res.json({ message: 'Product removed' });
     }
     catch (err) {
-        console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -72,7 +69,6 @@ export const viewAdminLogs = async (req, res) => {
         res.json({ logs });
     }
     catch (err) {
-        console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
 };
