@@ -24,13 +24,44 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
     try {
-        const filter = {};
-        if (req.query.category) filter.category = req.query.category;
-        if (req.query.status) filter.status = req.query.status;
-        if (req.query.user) filter.user_id = req.query.user;
+        const { category , status , user, size, condition, tags,search,} = req.query;
 
-        const products = await Product.find(filter).populate('user_id', 'name profile_image');
-        res.json({ products });
+        const filter = {};
+
+        if (category) {
+            const cats = category.split(',');
+            filter.category = cats.length > 1 ? { $in: cats } : cats[0];
+        }
+
+        if (status) filter.status = status;
+        if (user) filter.user_id = user;
+        if (size) filter.size = size;
+        if (condition) filter.condition = condition;
+
+        if (tags) {
+            const tagArr = tags.split(',');
+            filter.tags = { $in: tagArr };
+        }
+
+        if (search) {
+            filter.$text = { $search: search };
+        }
+
+        const page = parseInt(req.query.page ?? '1', 10);
+        const limit = parseInt(req.query.limit ?? '20', 10);
+        const skip = (page - 1) * limit;
+
+        const sortBy = req.query.sortBy || '-createdAt';
+
+        const products = await Product.find(filter)
+            .populate('user_id', 'name profile_image')
+            .sort(sortBy)
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Product.countDocuments(filter);
+
+        res.json({ total, page, limit, products });
     }
     catch (err) {
         console.error(err);
@@ -68,7 +99,7 @@ export const updateProduct = async (req, res) => {
         await product.save();
 
         res.json({ product });
-    } 
+    }
     catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
@@ -86,7 +117,7 @@ export const deleteProduct = async (req, res) => {
 
         await product.deleteOne();
         res.json({ message: 'Product deleted' });
-    } 
+    }
     catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });

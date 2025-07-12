@@ -1,7 +1,7 @@
-import Image from "next/image";
-
-export default function Home() {
+export default Home = () => {
     return (
-        <div>Hello</div>
-    );
+        <div>
+            <h1>Home</h1>
+        </div>
+    )
 }
