@@ -116,7 +116,7 @@ export default function LandingPage() {
                                                 <Button size="sm" className="ml-auto" onClick={() => {
                                                     window.location.href = `/product/${product._id}`
                                                 }}>
-                                                    Swap
+                                                    Get Product
                                                 </Button>
                                             </div>
                                         </CardContent>
