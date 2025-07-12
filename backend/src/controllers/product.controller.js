@@ -34,7 +34,7 @@ export const getAllProducts = async (req, res) => {
         const { category, status, user, size, condition, tags, search, } = req.query;
 
         const filter = {
-            approved: true,
+            approved: true ,
             status: 'available',
         };
 

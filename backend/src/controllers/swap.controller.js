@@ -16,7 +16,6 @@ export const createSwap = async (req, res) => {
         }
 
         const requestedProduct = await Product.findById(item_requested);
-        console.log(requestedProduct);
         if (!requestedProduct || requestedProduct.status != 'available') {
             return res.status(400).json({ message: 'Requested item not available' });
         }
@@ -77,7 +76,8 @@ export const createSwap = async (req, res) => {
         }
 
         res.status(201).json({ swap });
-    } catch (err) {
+    }
+    catch (err) {
         console.error('Error in createSwap:', err);
         res.status(500).json({ message: 'Server error' });
     }

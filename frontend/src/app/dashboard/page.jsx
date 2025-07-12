@@ -79,7 +79,7 @@ export default function UserDashboard() {
                     localStorage.removeItem("token");
                     window.location.href = "/";
                 }}>Logout</Button>
-                {user?.is_admin && <Button  variant="destructive" href="/panel" className="text-sm">Admin Panel</Button>}
+                {user?.is_admin && <Button  variant="destructive" onClick={() => window.location.href="/panel"} className="text-sm">Admin Panel</Button>}
             </div>
 
             <section className="mb-12">

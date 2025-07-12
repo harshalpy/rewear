@@ -141,9 +141,9 @@ const ListingForm = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                    { name: "category", options: ["Men", "Women", "Kids", "Unisex"] },
+                    { name: "category", options: ["men", "women", "unisex", "kids", "winter", "summer", "spring", "autumn", "formal", "casual", "party", "ethnic", "activewear", "workwear", "sleepwear", "accessories", "footwear", "maternity", "outerwear", "vintage"] },
                     { name: "size", options: ["XS", "S", "M", "L", "XL"] },
-                    { name: "condition", options: ["New", "Gently Used", "Used"] },
+                    { name: "condition", options: ["new", "like_new", "used", "worn"] },
                 ].map(({ name, options }) => (
                     <select
                         key={name}
