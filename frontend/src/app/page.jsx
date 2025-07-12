@@ -5,7 +5,6 @@ import axios from 'axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LandingPage() {
@@ -34,35 +33,18 @@ export default function LandingPage() {
 
     return (
         <div>
-            <header className="w-full px-6 py-4 border-b border-muted flex justify-between items-center">
-                <h1 className="text-2xl font-bold">ReWear</h1>
-                <nav className="flex gap-4 items-center">
-                    <Link href="/login" className="text-sm font-medium hover:underline">
-                        Login
-                    </Link>
-                    <Link href="/signup" className="text-sm font-medium hover:underline">
-                        Sign Up
-                    </Link>
-                </nav>
-            </header>
 
             <main className="p-6 space-y-16">
                 <motion.section
                     className="text-center space-y-4"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
-                    <h2 className="text-5xl font-extrabold tracking-tight">ReWear</h2>
+                    transition={{ duration: 0.6 }}>
+                    
+                    <h2 className='text-4xl font-bold'>Welcome to ReWear</h2>
                     <p className="mx-auto max-w-xl text-muted-foreground">
                         Swap your unused clothes, earn points, and support sustainable fashion.
                     </p>
-                    <div className="flex items-center justify-center gap-4">
-                        <Button size="lg">Start Swapping</Button>
-                        <Button size="lg" variant="outline">
-                            List an Item
-                        </Button>
-                    </div>
                 </motion.section>
 
                 <section className="space-y-4">
@@ -130,6 +112,12 @@ export default function LandingPage() {
                                                 <span className="text-xs text-muted-foreground">
                                                     {product?.user_id?.name || 'Unknown'}
                                                 </span>
+
+                                                <Button size="sm" className="ml-auto" onClick={() => {
+                                                    window.location.href = `/product/${product._id}`
+                                                }}>
+                                                    Swap
+                                                </Button>
                                             </div>
                                         </CardContent>
                                     </Card>

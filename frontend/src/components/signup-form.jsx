@@ -97,6 +97,7 @@ export function SignupForm() {
             if (response.ok) {
                 if (data.token) {
                     localStorage.setItem("token", data.token)
+                    localStorage.setItem("userId", data.user.id)
                 }
 
                 setMessage("Account created successfully! Redirecting...")

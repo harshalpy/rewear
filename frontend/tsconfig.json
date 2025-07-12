@@ -30,6 +30,6 @@
     "**/*.tsx",
     "src/app/dashboard/page.jsx",
     "src/app/panel/page.jsx"
-  ],
+, "src/lib/handleswap.js"  ],
   "exclude": ["node_modules"]
 }

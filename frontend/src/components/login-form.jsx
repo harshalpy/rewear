@@ -80,6 +80,7 @@ export function LoginForm() {
             if (response.ok) {
                 if (data.token) {
                     localStorage.setItem("token", data.token)
+                    localStorage.setItem("userId", data.user.id)
                 }
 
                 setMessage("Login successful! Redirecting...")
